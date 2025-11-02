@@ -13,6 +13,7 @@
       align-items: center;
       background: linear-gradient(135deg, #a8edea, #fed6e3);
       font-family: "Poppins", sans-serif;
+      padding: 20px;
     }
 
     .container {
@@ -20,7 +21,7 @@
       padding: 40px 60px;
       border-radius: 25px;
       box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-      width: 90%;
+      width: 100%;
       max-width: 600px;
       text-align: center;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -32,14 +33,14 @@
     }
 
     h1 {
-      font-size: 2.5rem;
+      font-size: 2.2rem;
       color: #333;
       margin-bottom: 10px;
     }
 
     p {
       color: #777;
-      font-size: 1.1rem;
+      font-size: 1rem;
       margin-bottom: 25px;
     }
 
@@ -56,6 +57,8 @@
       border-radius: 10px;
       font-size: 0.95rem;
       transition: border-color 0.2s ease;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     input:focus {
@@ -84,7 +87,7 @@
       display: none;
       padding: 20px;
       border-radius: 15px;
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       font-weight: 600;
       margin-top: 15px;
       transition: all 0.4s ease;
@@ -109,6 +112,55 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
+    /* 📱 Responsive adjustments */
+    @media (max-width: 768px) {
+      .container {
+        padding: 30px 25px;
+      }
+
+      form {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      p {
+        font-size: 0.95rem;
+      }
+
+      button {
+        grid-column: 1;
+        font-size: 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 25px 20px;
+        border-radius: 20px;
+      }
+
+      h1 {
+        font-size: 1.6rem;
+      }
+
+      p {
+        font-size: 0.9rem;
+      }
+
+      input {
+        font-size: 0.9rem;
+        padding: 8px 12px;
+      }
+
+      button {
+        font-size: 0.95rem;
+        padding: 10px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -142,10 +194,7 @@
       const formData = new FormData(form);
       const data = Object.fromEntries(formData.entries());
 
-      // Convert numeric strings → numbers
-      for (let key in data) {
-        data[key] = parseFloat(data[key]);
-      }
+      for (let key in data) data[key] = parseFloat(data[key]);
 
       resultDiv.textContent = "Predicting... 🌈";
       resultDiv.style.display = "block";
