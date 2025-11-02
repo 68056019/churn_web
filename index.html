@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Churn Predictor 🌸</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #a8edea, #fed6e3);
+      font-family: "Poppins", sans-serif;
+    }
+
+    .container {
+      background: #fff;
+      padding: 40px 60px;
+      border-radius: 25px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 600px;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #777;
+      font-size: 1.1rem;
+      margin-bottom: 25px;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    input {
+      padding: 10px 14px;
+      border: 2px solid #eee;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      transition: border-color 0.2s ease;
+    }
+
+    input:focus {
+      border-color: #ff6f91;
+      outline: none;
+    }
+
+    button {
+      grid-column: span 2;
+      padding: 12px;
+      background: linear-gradient(90deg, #ff9a9e, #fad0c4);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 18px rgba(255, 111, 145, 0.3);
+    }
+
+    .result {
+      display: none;
+      padding: 20px;
+      border-radius: 15px;
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-top: 15px;
+      transition: all 0.4s ease;
+    }
+
+    .result.churn {
+      display: block;
+      background: #ffe5ec;
+      color: #d7263d;
+      animation: pop 0.6s ease;
+    }
+
+    .result.not-churn {
+      display: block;
+      background: #e4f9f5;
+      color: #0b8457;
+      animation: pop 0.6s ease;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📱 Churn Prediction</h1>
+    <p>Enter customer data to see if they will churn 💭</p>
+
+    <form id="churnForm">
+      <input type="number" step="any" name="AccountWeeks" placeholder="Account Weeks" required>
+      <input type="number" name="ContractRenewal" placeholder="Contract Renewal (0/1)" required>
+      <input type="number" name="DataPlan" placeholder="Data Plan (0/1)" required>
+      <input type="number" step="any" name="DataUsage" placeholder="Data Usage (GB)" required>
+      <input type="number" step="any" name="CustServCalls" placeholder="Customer Service Calls" required>
+      <input type="number" step="any" name="DayMins" placeholder="Day Minutes" required>
+      <input type="number" step="any" name="DayCalls" placeholder="Day Calls" required>
+      <input type="number" step="any" name="MonthlyCharge" placeholder="Monthly Charge ($)" required>
+      <input type="number" step="any" name="OverageFee" placeholder="Overage Fee ($)" required>
+      <input type="number" step="any" name="RoamMins" placeholder="Roam Minutes" required>
+      <button type="submit">Predict 💫</button>
+    </form>
+
+    <div id="result" class="result"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById("churnForm");
+    const resultDiv = document.getElementById("result");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      // Convert numeric strings → numbers
+      for (let key in data) {
+        data[key] = parseFloat(data[key]);
+      }
+
+      resultDiv.textContent = "Predicting... 🌈";
+      resultDiv.style.display = "block";
+      resultDiv.className = "result";
+
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+
+        if (result.churn_prediction === true) {
+          resultDiv.textContent = "🚨 This customer is likely to CHURN!";
+          resultDiv.className = "result churn";
+        } else {
+          resultDiv.textContent = "💖 This customer will likely STAY loyal!";
+          resultDiv.className = "result not-churn";
+        }
+      } catch (err) {
+        resultDiv.textContent = "Error connecting to server 😢";
+        resultDiv.className = "result churn";
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>
